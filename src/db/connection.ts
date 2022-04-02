@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import {defaultMongoUrl} from '../utils'
-const mongoUrl = process.env.mongoUrl ||defaultMongoUrl
+const mongoUrl = process.env.MONGO_URL ||defaultMongoUrl
 
 export const connectdb = async () =>{
   try {
