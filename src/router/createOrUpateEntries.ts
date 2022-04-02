@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import {CacheEntry} from "../db"
 import { BadRequest } from "http-errors";
-import { CacheEntryType, deleteOneEntry, updateCurrentCount } from "../utils";
+import { CacheEntryType, deleteOneEntry, genHexString, ttlExpired, updateCurrentCount } from "../utils";
 
 
 export const createOrUpdateCacheEntries = async (req: Request, res:Response) =>{
@@ -13,7 +13,8 @@ export const createOrUpdateCacheEntries = async (req: Request, res:Response) =>{
 
     let entry: CacheEntryType;
 
-    entry = await CacheEntry.findByIdAndUpdate(key, { data }).lean();
+    entry = await CacheEntry.findById(key).lean();
+
     if (!entry) {
       console.log("Cache miss");
       if (
@@ -22,11 +23,17 @@ export const createOrUpdateCacheEntries = async (req: Request, res:Response) =>{
       ) {
         await deleteOneEntry();
       }
-      entry = await CacheEntry.create({ _id: key, data },);
+      entry = await CacheEntry.create({ _id: key, data, hitsForTTL: 1},);
       await updateCurrentCount(
         Number(process.env.CACHE_CURRENT_COUNT) + 1
       )
     } else {
+      if (ttlExpired(entry.updatedAt)) {
+        entry = await CacheEntry.findByIdAndUpdate(key, {
+          data: genHexString(22),
+          hitsForTTL: 1
+        }).lean();
+      } else await CacheEntry.findByIdAndUpdate(key, { hitsForTTL: Number(entry.hitsForTTL)+1})
       console.log("Cache hit");
     }
 

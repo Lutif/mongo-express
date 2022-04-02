@@ -10,7 +10,6 @@ if (!process.env.CACHE_LIMIT) process.env.CACHE_LIMIT = cacheLimit;
 export const main = async () => {
   connectdb();
   await updateCurrentCount()
-
   const app = express();
   app.use(bodyParser.json());
 

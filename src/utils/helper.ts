@@ -33,10 +33,16 @@ export const deleteOneEntry = async () => {
 
 
   //Approach A remove least recent updated item
+  // const items:CacheEntryType[] = await CacheEntry.find({}, null, {
+  //   sort: { updatedAt: 1 },
+  //   limit: 1,
+  // });
+  //Approach B remove least frequently queried item
   const items:CacheEntryType[] = await CacheEntry.find({}, null, {
-    sort: { updatedAt: 1 },
+    sort: { hitsForTTL: 1 },
     limit: 1,
   });
-  
   await CacheEntry.findByIdAndDelete(items?.[0]._id)
+  await updateCurrentCount(Number(process.env.CACHE_CURRENT_COUNT) - 1)
+
 };

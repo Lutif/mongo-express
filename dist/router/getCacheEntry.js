@@ -19,14 +19,14 @@ const getCacheEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         if (!key)
             throw new http_errors_1.BadRequest("Missing key input");
         let entry;
-        entry = yield db_1.CacheEntry.findByIdAndUpdate(key, {}).lean();
+        entry = yield db_1.CacheEntry.findById(key).lean();
         if (!entry) {
             console.log("Cache miss");
             if (Number(process.env.CACHE_CURRENT_COUNT) >=
                 Number(process.env.CACHE_LIMIT)) {
                 yield (0, utils_1.deleteOneEntry)();
             }
-            entry = yield db_1.CacheEntry.create({ _id: key });
+            entry = yield db_1.CacheEntry.create({ _id: key, hitsForTTL: 1 });
             yield (0, utils_1.updateCurrentCount)(Number(process.env.CACHE_CURRENT_COUNT) + 1);
         }
         else {
@@ -34,7 +34,11 @@ const getCacheEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             if ((0, utils_1.ttlExpired)(entry.updatedAt)) {
                 entry = yield db_1.CacheEntry.findByIdAndUpdate(key, {
                     data: (0, utils_1.genHexString)(22),
+                    hitsForTTL: 1
                 }).lean();
+            }
+            else {
+                yield db_1.CacheEntry.findByIdAndUpdate(key, { hitsForTTL: Number(entry.hitsForTTL) + 1 });
             }
         }
         return res.send(entry.data);

@@ -17,7 +17,7 @@ export const getCacheEntry = async (req: Request, res: Response) => {
 
     let entry: CacheEntryType;
 
-    entry = await CacheEntry.findByIdAndUpdate(key, {}).lean();
+    entry = await CacheEntry.findById(key).lean();
     if (!entry) {
       console.log("Cache miss");
 
@@ -28,16 +28,19 @@ export const getCacheEntry = async (req: Request, res: Response) => {
         await deleteOneEntry();
       }
 
-      entry = await CacheEntry.create({ _id: key });
+      entry = await CacheEntry.create({ _id: key, hitsForTTL:1 });
 
       await updateCurrentCount(Number(process.env.CACHE_CURRENT_COUNT) + 1);
     } else {
-      
+
       console.log("Cache hit");
       if (ttlExpired(entry.updatedAt)) {
         entry = await CacheEntry.findByIdAndUpdate(key, {
           data: genHexString(22),
+          hitsForTTL: 1
         }).lean();
+      }else{
+        await CacheEntry.findByIdAndUpdate(key, { hitsForTTL: Number(entry.hitsForTTL)+1})
       }
     }
 
