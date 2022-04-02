@@ -10,6 +10,6 @@
 
 - `PORT` : port to run express server on
 - `CACHE_LIMIT`: Maximum number of cache entries allowed
-- `MONGO_URL`: Mongodb connection string
+- `MONGO_URL`: Mongodb connection string default to mongodb://localhost:27017/cache
 - `TTL` : Time To Live in `ms` for cache item
 
