@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { genHexString } from "../utils";
 
-const todoSchema = new mongoose.Schema(
+const cacheSchema = new mongoose.Schema(
   {
     _id: {
       type: String,
@@ -19,4 +19,4 @@ const todoSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-export const Todo = mongoose.model("Todo", todoSchema);
+export const CacheEntry = mongoose.model("cache", cacheSchema);

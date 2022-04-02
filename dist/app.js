@@ -15,15 +15,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.main = void 0;
 const express_1 = __importDefault(require("express"));
 const db_1 = require("./db");
+const router_1 = require("./router");
 const PORT = process.env.PORT || 3000;
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     const app = (0, express_1.default)();
     (0, db_1.connectdb)();
-    app.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        req.baseUrl;
-        const todo = yield db_1.Todo.create({ title: "hello", description: "nice" });
-        res.send(JSON.stringify(todo));
-    }));
+    app.use(router_1.router);
     app.listen(PORT, () => {
         console.log(`Server is up and running on port: ${PORT}`);
     });

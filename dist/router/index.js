@@ -1,18 +1,15 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-__exportStar(require("./getCacheEntry"), exports);
+exports.router = void 0;
+const express_1 = require("express");
+const getCacheEntry_1 = require("./getCacheEntry");
+const getCacheEntries_1 = require("./getCacheEntries");
+const createOrUpateEntries_1 = require("./createOrUpateEntries");
+const removeAllEntries_1 = require("./removeAllEntries");
+const router = (0, express_1.Router)();
+exports.router = router;
+router.get("/cache/:key", getCacheEntry_1.getCacheEntry);
+router.get("/cache", getCacheEntries_1.getCacheEntries);
+router.put("/hello", createOrUpateEntries_1.createOrUpdateCacheEntries);
+router.delete("/hello", removeAllEntries_1.removeAllEntries);
 //# sourceMappingURL=index.js.map
