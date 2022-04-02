@@ -1,14 +1,14 @@
 import {Router} from "express";
 import {getCacheEntry} from "./getCacheEntry"
-import {getCacheEntries} from "./getCacheEntries"
+import {getCacheKey} from "./getCacheKeys"
 import {createOrUpdateCacheEntries } from "./createOrUpateEntries";
 import {removeAllEntries} from "./removeAllEntries"
 
 const router = Router()
 
 router.get("/cache/:key", getCacheEntry)
-router.get("/cache", getCacheEntries)
-router.put("/hello", createOrUpdateCacheEntries)
-router.delete("/hello", removeAllEntries)
+router.get("/key", getCacheKey)
+router.put("/cache/:key", createOrUpdateCacheEntries)
+router.delete("/cache", removeAllEntries)
 
 export {router}

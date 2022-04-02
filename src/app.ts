@@ -1,12 +1,15 @@
 import express from "express";
 import { connectdb } from "./db"
 import {router} from "./router"
+import bodyParser from "body-parser";
 
 const PORT = process.env.PORT || 3000;
 
 export const main = async () => {
-  const app = express();
   connectdb()
+
+  const app = express();
+  app.use(bodyParser.json())
   app.use(router)
 
   app.listen(PORT, () => {

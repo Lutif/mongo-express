@@ -16,10 +16,12 @@ exports.main = void 0;
 const express_1 = __importDefault(require("express"));
 const db_1 = require("./db");
 const router_1 = require("./router");
+const body_parser_1 = __importDefault(require("body-parser"));
 const PORT = process.env.PORT || 3000;
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
-    const app = (0, express_1.default)();
     (0, db_1.connectdb)();
+    const app = (0, express_1.default)();
+    app.use(body_parser_1.default.json());
     app.use(router_1.router);
     app.listen(PORT, () => {
         console.log(`Server is up and running on port: ${PORT}`);
