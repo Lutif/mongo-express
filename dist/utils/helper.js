@@ -43,6 +43,7 @@ const deleteOneEntry = () => __awaiter(void 0, void 0, void 0, function* () {
         limit: 1,
     });
     yield db_1.CacheEntry.findByIdAndDelete(items === null || items === void 0 ? void 0 : items[0]._id);
+    yield (0, exports.updateCurrentCount)(Number(process.env.CACHE_CURRENT_COUNT) - 1);
 });
 exports.deleteOneEntry = deleteOneEntry;
 //# sourceMappingURL=helper.js.map

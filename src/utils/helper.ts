@@ -39,4 +39,7 @@ export const deleteOneEntry = async () => {
   });
   
   await CacheEntry.findByIdAndDelete(items?.[0]._id)
+  await updateCurrentCount(
+    Number(process.env.CACHE_CURRENT_COUNT) - 1
+  )
 };
