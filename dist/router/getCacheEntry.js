@@ -22,12 +22,19 @@ const getCacheEntry = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         entry = yield db_1.CacheEntry.findByIdAndUpdate(key, {}).lean();
         if (!entry) {
             console.log("Cache miss");
+            if (Number(process.env.CACHE_CURRENT_COUNT) >=
+                Number(process.env.CACHE_LIMIT)) {
+                yield (0, utils_1.deleteOneEntry)();
+            }
             entry = yield db_1.CacheEntry.create({ _id: key });
+            yield (0, utils_1.updateCurrentCount)(Number(process.env.CACHE_CURRENT_COUNT) + 1);
         }
         else {
             console.log("Cache hit");
             if ((0, utils_1.ttlExpired)(entry.updatedAt)) {
-                entry = yield db_1.CacheEntry.findByIdAndUpdate(key, { data: (0, utils_1.genHexString)(22) }).lean();
+                entry = yield db_1.CacheEntry.findByIdAndUpdate(key, {
+                    data: (0, utils_1.genHexString)(22),
+                }).lean();
             }
         }
         return res.send(entry.data);

@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createOrUpdateCacheEntries = void 0;
 const db_1 = require("../db");
 const http_errors_1 = require("http-errors");
+const utils_1 = require("../utils");
 const createOrUpdateCacheEntries = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { key } = req.params;
@@ -22,7 +23,12 @@ const createOrUpdateCacheEntries = (req, res) => __awaiter(void 0, void 0, void 
         entry = yield db_1.CacheEntry.findByIdAndUpdate(key, { data }).lean();
         if (!entry) {
             console.log("Cache miss");
+            if (Number(process.env.CACHE_CURRENT_COUNT) >=
+                Number(process.env.CACHE_LIMIT)) {
+                yield (0, utils_1.deleteOneEntry)();
+            }
             entry = yield db_1.CacheEntry.create({ _id: key, data });
+            yield (0, utils_1.updateCurrentCount)(Number(process.env.CACHE_CURRENT_COUNT) + 1);
         }
         else {
             console.log("Cache hit");

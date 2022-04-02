@@ -17,9 +17,13 @@ const express_1 = __importDefault(require("express"));
 const db_1 = require("./db");
 const router_1 = require("./router");
 const body_parser_1 = __importDefault(require("body-parser"));
+const utils_1 = require("./utils");
 const PORT = process.env.PORT || 3000;
+if (!process.env.CACHE_LIMIT)
+    process.env.CACHE_LIMIT = utils_1.cacheLimit;
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     (0, db_1.connectdb)();
+    yield (0, utils_1.updateCurrentCount)();
     const app = (0, express_1.default)();
     app.use(body_parser_1.default.json());
     app.use(router_1.router);

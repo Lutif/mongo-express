@@ -10,11 +10,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.removeAllEntries = void 0;
+const utils_1 = require("../utils");
 const db_1 = require("../db");
 const removeAllEntries = (_, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { deletedCount } = yield db_1.CacheEntry.deleteMany();
-        console.log({ res });
+        yield (0, utils_1.updateCurrentCount)(Number(process.env.CACHE_CURRENT_COUNT) - (deletedCount || 0));
         return res.send(`deleted ${deletedCount} objects`);
     }
     catch (error) {

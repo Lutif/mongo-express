@@ -1,10 +1,16 @@
 import { Request, Response } from "express";
 import { CacheEntry } from "../db";
 import { BadRequest } from "http-errors";
-import { CacheEntryType, ttlExpired, genHexString } from "../utils";
+import {
+  CacheEntryType,
+  ttlExpired,
+  genHexString,
+  updateCurrentCount,
+  deleteOneEntry,
+} from "../utils";
 
 export const getCacheEntry = async (req: Request, res: Response) => {
-//@todo: add limit logic
+  //@todo: add limit logic
   try {
     const { key } = req.params;
     if (!key) throw new BadRequest("Missing key input");
@@ -14,11 +20,24 @@ export const getCacheEntry = async (req: Request, res: Response) => {
     entry = await CacheEntry.findByIdAndUpdate(key, {}).lean();
     if (!entry) {
       console.log("Cache miss");
+
+      if (
+        Number(process.env.CACHE_CURRENT_COUNT) >=
+        Number(process.env.CACHE_LIMIT)
+      ) {
+        await deleteOneEntry();
+      }
+
       entry = await CacheEntry.create({ _id: key });
+
+      await updateCurrentCount(Number(process.env.CACHE_CURRENT_COUNT) + 1);
     } else {
+      
       console.log("Cache hit");
       if (ttlExpired(entry.updatedAt)) {
-        entry = await CacheEntry.findByIdAndUpdate(key,{data:genHexString(22)}).lean()
+        entry = await CacheEntry.findByIdAndUpdate(key, {
+          data: genHexString(22),
+        }).lean();
       }
     }
 
